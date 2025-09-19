@@ -14,8 +14,8 @@ from sampling import LocalDataset, LocalDataloaders, partition_data
 import gc
 
 class ServerFedProto(Server):
-    def __init__(self, args, global_model,Loader_train,Loaders_local_test,Loader_global_test,logger,device):
-        super().__init__(args, global_model,Loader_train,Loaders_local_test,Loader_global_test,logger,device)
+    def __init__(self, args, global_model,Loader_train,Loaders_local_test,Loader_global_test,device):
+        super().__init__(args, global_model,Loader_train,Loaders_local_test,Loader_global_test,device)
 
     
     def Create_Clints(self):
@@ -38,7 +38,6 @@ class ServerFedProto(Server):
 
     def train(self):
         global_features = {}
-        reporter = MemReporter()
         start_time = time.time()
         train_loss = []
         global_weights = self.global_model.state_dict()
@@ -84,4 +83,3 @@ class ServerFedProto(Server):
         print('Training is completed.')
         end_time = time.time()
         print('running time: {} s '.format(end_time - start_time))
-        reporter.report()

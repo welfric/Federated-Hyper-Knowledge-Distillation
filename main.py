@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import os,sys,os.path
-from tensorboardX import SummaryWriter
 import pickle
 from torch import nn
 import hashlib
@@ -17,6 +16,7 @@ from Server.ServerFedProx import ServerFedProx
 from Server.ServerFedMD import ServerFedMD 
 from Server.ServerFedProto import ServerFedProto
 from Server.ServerFedHKD import ServerFedHKD
+from Server.ServerFedTemp import ServerFedTemp
 
 print(torch.__version__)
 torch.cuda.is_available()
@@ -64,7 +64,6 @@ for idx in range(args.num_clients):
 
 
 
-logger = SummaryWriter('./logs')
 checkpoint_dir = './checkpoint/'+ args.dataset + '/'
 if not os.path.exists(checkpoint_dir):
     os.makedirs(checkpoint_dir)
@@ -95,16 +94,17 @@ global_model.to(device)
 
 
 if args.alg == 'FedAvg':
-    server = ServerFedAvg(args,global_model,Loaders_train,Loaders_test,global_loader_test,logger,device)
+    server = ServerFedAvg(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
 if args.alg == 'FedProx':
-    server = ServerFedProx(args,global_model,Loaders_train,Loaders_test,global_loader_test,logger,device)
+    server = ServerFedProx(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
 if args.alg == 'FedMD':
-    server = ServerFedMD(args,global_model,Loaders_train,Loaders_test,global_loader_test,testset,logger,device)
+    server = ServerFedMD(args,global_model,Loaders_train,Loaders_test,global_loader_test,testset,device)
 if args.alg == 'FedProto':    
-    server = ServerFedProto(args,global_model,Loaders_train,Loaders_test,global_loader_test,logger,device)
+    server = ServerFedProto(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
 if args.alg == 'FedHKD':    
-    server = ServerFedHKD(args,global_model,Loaders_train,Loaders_test,global_loader_test,logger,device)
-
+    server = ServerFedHKD(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
+if args.alg == "FedTemp":
+    server = ServerFedTemp(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
 
 server.Create_Clints()
 server.train()

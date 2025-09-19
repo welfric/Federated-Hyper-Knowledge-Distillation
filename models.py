@@ -68,3 +68,16 @@ class ShuffLeNet(nn.Module):
         z = self.feature_extractor(x)
         p = self.classifier(z)
         return z,p
+class TempNet(nn.Module):
+    def __init__(self, feature_dim=512, hidden_dim=128, tau_min=0.1, tau_max=2.0):
+        super().__init__()
+        self.fc1 = nn.Linear(feature_dim, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, 1)
+        self.tau_min = tau_min
+        self.tau_max = tau_max
+
+    def forward(self, features):
+        h = torch.relu(self.fc1(features))
+        raw_tau = self.fc2(h)
+        tau = torch.sigmoid(raw_tau) * (self.tau_max - self.tau_min) + self.tau_min
+        return tau.mean()  # single scalar τ per batch

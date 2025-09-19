@@ -1,0 +1,76 @@
+import torch
+import copy
+import numpy as np
+import time
+from tqdm import tqdm
+from ServerBase import Server
+from models import TempNet
+from Client.ClientFedTemp import ClientFedTemp
+from utils import average_weights
+
+
+class ServerFedTemp(Server):
+    def __init__(
+        self,
+        args,
+        global_model,
+        loaders_train,
+        loaders_local_test,
+        loader_global_test,
+        device,
+    ):
+        super().__init__(
+            args,
+            global_model,
+            loaders_train,
+            loaders_local_test,
+            loader_global_test,
+            device,
+        )
+
+    def Create_Clients(self):
+        for idx in range(self.args.num_clients):
+            self.LocalModels.append(
+                ClientFedTemp(
+                    self.args,
+                    copy.deepcopy(self.global_model),
+                    self.Loaders_train[idx],
+                    self.Loaders_local_test[idx],
+                    idx=idx,
+                    device=self.device,
+                )
+            )
+
+    def train(self):
+        start_time = time.time()
+        train_loss = []
+        global_weights = self.global_model.state_dict()
+        for epoch in tqdm(range(self.args.num_epochs)):
+            test_accuracy = 0
+            local_weights, local_losses = [], []
+            print(f"\n | Global Training Round : {epoch+1} |\n")
+            m = max(int(self.args.sampling_rate * self.args.num_clients), 1)
+            idxs_users = np.random.choice(
+                range(self.args.num_clients), m, replace=False
+            )
+            for idx in idxs_users:
+                if self.args.upload_model:
+                    self.LocalModels[idx].load_model(global_weights)
+                w, loss = self.LocalModels[idx].update_weights(global_round=epoch)
+                local_losses.append(copy.deepcopy(loss))
+                local_weights.append(copy.deepcopy(w))
+                acc = self.LocalModels[idx].test_accuracy()
+                test_accuracy += acc
+
+            # Update global weights
+            global_weights = average_weights(local_weights)
+            self.global_model.load_state_dict(global_weights)
+            loss_avg = sum(local_losses) / len(local_losses)
+            train_loss.append(loss_avg)
+            print("average loss:  ", loss_avg)
+            print("average local test accuracy:", test_accuracy / self.args.num_clients)
+            print("global test accuracy: ", self.global_test_accuracy())
+
+        print("Training is completed.")
+        end_time = time.time()
+        print("running time: {} s ".format(end_time - start_time))

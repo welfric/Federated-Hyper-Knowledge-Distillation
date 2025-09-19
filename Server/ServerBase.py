@@ -1,17 +1,13 @@
-
-from torch.utils.data import Dataset
 import torch
-import copy
 from utils import Accuracy
 
 class Server(object):
-    def __init__(self,args, global_model,Loaders_train, Loaders_local_test, Loader_global_test, logger, device):
+    def __init__(self,args, global_model,Loaders_train, Loaders_local_test, Loader_global_test, device):
         self.global_model = global_model
         self.args = args
         self.Loaders_train = Loaders_train
         self.Loaders_local_test = Loaders_local_test
         self.global_testloader = Loader_global_test
-        self.logger = logger
         self.device = device
         self.LocalModels = []
         

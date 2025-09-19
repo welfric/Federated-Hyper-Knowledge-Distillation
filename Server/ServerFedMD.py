@@ -14,8 +14,8 @@ from sampling import LocalDataset, LocalDataloaders, partition_data
 import gc
 
 class ServerFedMD(Server):
-    def __init__(self, args, global_model,Loader_train,Loaders_local_test,Loader_global_test, pub_test,logger,device):
-        super().__init__(args, global_model,Loader_train,Loaders_local_test,Loader_global_test,logger,device)
+    def __init__(self, args, global_model,Loader_train,Loaders_local_test,Loader_global_test, pub_test,device):
+        super().__init__(args, global_model,Loader_train,Loaders_local_test,Loader_global_test,device)
         dict_pub = [np.random.randint(low=0,high=10000,size = 1000)]
         self.public_data = LocalDataloaders(pub_test,dict_pub,args.batch_size,ShuffleorNot = False,frac=1)[0]
     
@@ -27,7 +27,6 @@ class ServerFedMD(Server):
             
             
     def train(self):
-        reporter = MemReporter()
         start_time = time.time()
         train_loss = []
         global_weights = self.global_model.state_dict()
@@ -81,4 +80,3 @@ class ServerFedMD(Server):
         print('Training is completed.')
         end_time = time.time()
         print('running time: {} s '.format(end_time - start_time))
-        reporter.report()
