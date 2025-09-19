@@ -19,10 +19,10 @@ class ClientFedTemp:
         self.temp_optimizer = torch.optim.SGD(self.tempnet.parameters(), lr=args.lr)
         self.warmup_rounds = 25
 
-    def update_weights(self, global_rounds):
+    def update_weights(self, global_round):
         self.model.train()
 
-        warmup = global_rounds < self.warmup_rounds
+        warmup = global_round < self.warmup_rounds
 
         if warmup:
             self.tempnet.train()
