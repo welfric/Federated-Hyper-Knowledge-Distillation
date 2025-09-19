@@ -28,7 +28,7 @@ class ServerFedTemp(Server):
             device,
         )
 
-    def Create_Clients(self):
+    def Create_Clints(self):
         for idx in range(self.args.num_clients):
             self.LocalModels.append(
                 ClientFedTemp(
