@@ -3,7 +3,7 @@ import copy
 import numpy as np
 import time
 from tqdm import tqdm
-from ServerBase import Server
+from Server.ServerBase import Server
 from models import TempNet
 from Client.ClientFedTemp import ClientFedTemp
 from utils import average_weights
