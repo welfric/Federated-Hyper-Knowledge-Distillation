@@ -15,8 +15,6 @@ class ClientFedTemp:
         self.model = copy.deepcopy(model)
         self.tempnet = TempNet(feature_dim=64).to(device)
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr)
-        self.temp_optimizer = torch.optim.SGD(self.tempnet.parameters(), lr=args.lr)
         self.warmup_rounds = 25
 
     def update_weights(self, global_round):
@@ -29,15 +27,18 @@ class ClientFedTemp:
         else:
             self.tempnet.eval()
 
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
+        temp_optimizer = torch.optim.SGD(self.tempnet.parameters(), lr=self.args.lr)
+
         epoch_loss = []
         for iter in range(self.args.local_ep):
             batch_loss = []
             for X, y in self.train_loader:
                 X = X.to(self.device)
                 y = y.to(self.device)
-                self.optimizer.zero_grad()
+                optimizer.zero_grad()
                 if warmup:
-                    self.temp_optimizer.zero_grad()
+                    temp_optimizer.zero_grad()
 
                 # Forward pass through backbone
                 features, logits = self.model(X)
@@ -52,9 +53,9 @@ class ClientFedTemp:
                 loss = self.criterion(scaled_logits, y)
 
                 loss.backward()
-                self.optimizer.step()
+                optimizer.step()
                 if warmup:
-                    self.temp_optimizer.step()
+                    temp_optimizer.step()
 
                 batch_loss.append(loss.item())
 
