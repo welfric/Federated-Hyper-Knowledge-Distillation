@@ -7,6 +7,7 @@ from Server.ServerBase import Server
 from models import TempNet
 from Client.ClientFedTemp import ClientFedTemp
 from utils import average_weights
+import matplotlib.pyplot as plt
 
 
 class ServerFedTemp(Server):
@@ -45,6 +46,7 @@ class ServerFedTemp(Server):
         start_time = time.time()
         train_loss = []
         global_weights = self.global_model.state_dict()
+        client_temps = [[] for _ in range(self.args.num_clients)]
         for epoch in tqdm(range(self.args.num_epochs)):
             test_accuracy = 0
             local_weights, local_losses = [], []
@@ -56,7 +58,10 @@ class ServerFedTemp(Server):
             for idx in idxs_users:
                 if self.args.upload_model:
                     self.LocalModels[idx].load_model(global_weights)
-                w, loss = self.LocalModels[idx].update_weights(global_round=epoch)
+                w, loss, tau_val = self.LocalModels[idx].update_weights(
+                    global_round=epoch
+                )
+                client_temps[idx].append(tau_val)
                 local_losses.append(copy.deepcopy(loss))
                 local_weights.append(copy.deepcopy(w))
                 acc = self.LocalModels[idx].test_accuracy()
@@ -74,3 +79,13 @@ class ServerFedTemp(Server):
         print("Training is completed.")
         end_time = time.time()
         print("running time: {} s ".format(end_time - start_time))
+
+        plt.figure(figsize=(10, 6))
+        for i in range(len(client_temps)):
+            plt.plot(
+                self.args.num_epochs, client_temps[i], marker="s", label=f"Client {i}"
+            )
+        plt.title("Client τ evolution")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
