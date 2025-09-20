@@ -19,9 +19,8 @@ class Client(object):
     idxs: the index for data of this local model
     logger: log the loss and the process
     """
-    def __init__(self, args, model,Loader_train,loader_test,idx, logger, code_length, num_classes, device):
+    def __init__(self, args, model,Loader_train,loader_test,idx, code_length, num_classes, device):
         self.args = args
-        self.logger = logger
         self.trainloader = Loader_train
         self.testloader = loader_test
         self.idx = idx
