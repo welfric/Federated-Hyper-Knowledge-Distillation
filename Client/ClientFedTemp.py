@@ -29,9 +29,9 @@ class ClientFedTemp:
             self.tempnet.eval()
 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
-        self.temp_optimizer = torch.optim.Adam(
+        self.temp_optimizer = torch.optim.SGD(
             self.tempnet.parameters(),
-            lr=self.args.lr,
+            lr=self.args.lr/10,
         )
 
         epoch_loss = []
