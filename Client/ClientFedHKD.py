@@ -48,7 +48,6 @@ class ClientFedHKD(Client):
                         global_round, self.idx, iter, batch_idx * len(X),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss.item()))
-                self.logger.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
@@ -99,7 +98,6 @@ class ClientFedHKD(Client):
                         global_round, iter, batch_idx * len(X),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss1.item(),loss2.item(),loss3.item()))
-                self.logger.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
                         
