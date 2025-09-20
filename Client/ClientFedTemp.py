@@ -33,7 +33,7 @@ class ClientFedTemp:
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
         epoch_loss = []
-        for iter in range(self.args.local_ep):
+        for _ in range(self.args.local_ep):
             batch_loss = []
             for X, y in self.train_loader:
                 X = X.to(self.device)
@@ -66,14 +66,13 @@ class ClientFedTemp:
                 batch_loss.append(loss.item())
 
             epoch_loss.append(sum(batch_loss) / len(batch_loss))
-        
-        with torch.no_grad():
-                print(f"Type of train_loader: {type(self.train_loader)}")
 
-                sample_data, _ = next(iter(self.train_loader))
-                sample_data = sample_data.to(self.device)
-                f, _ = self.model(sample_data)
-                tau_val = self.tempnet(f).item()
+        with torch.no_grad():
+
+            sample_data, _ = next(iter(self.train_loader))
+            sample_data = sample_data.to(self.device)
+            f, _ = self.model(sample_data)
+            tau_val = self.tempnet(f).item()
 
         return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss), tau_val
 
