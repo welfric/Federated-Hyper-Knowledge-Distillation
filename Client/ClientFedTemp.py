@@ -68,6 +68,8 @@ class ClientFedTemp:
             epoch_loss.append(sum(batch_loss) / len(batch_loss))
         
         with torch.no_grad():
+                print(f"Type of train_loader: {type(self.train_loader)}")
+
                 sample_data, _ = next(iter(self.train_loader))
                 sample_data = sample_data.to(self.device)
                 f, _ = self.model(sample_data)
