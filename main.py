@@ -6,7 +6,7 @@ from torch import nn
 import hashlib
 import argparse
 
-from models import CNNFemnist,ResNet18,ShuffLeNet
+from models import CNNFemnist,ResNet18,ShuffLeNet, SimpleCNN
 from sampling import LocalDataset, LocalDataloaders, partition_data
 from option import args_parser
 
@@ -76,8 +76,7 @@ print('Checkpoint dir:', checkpoint_dir)
 
 print(args.model)
 if args.model == 'CNN':
-    # for EMNIST 62 classes
-    global_model = CNNFemnist(args, code_length=args.code_len, num_classes = args.num_classes)
+    global_model = SimpleCNN()
     
 if args.model == 'resnet18':
     global_model = ResNet18(args, code_length=args.code_len, num_classes = args.num_classes)
