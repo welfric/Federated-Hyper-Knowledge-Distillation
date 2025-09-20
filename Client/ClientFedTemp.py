@@ -14,10 +14,7 @@ class ClientFedTemp:
         self.device = device
         self.model = copy.deepcopy(model)
         self.tempnet = TempNet(feature_dim=64).to(device)
-        self.temp_optimizer = torch.optim.Adam(
-            self.tempnet.parameters(),
-            lr=self.args.lr,
-        )
+
         self.criterion = nn.CrossEntropyLoss()
         self.warmup_rounds = 25
 
@@ -32,6 +29,10 @@ class ClientFedTemp:
             self.tempnet.eval()
 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
+        self.temp_optimizer = torch.optim.Adam(
+            self.tempnet.parameters(),
+            lr=self.args.lr,
+        )
 
         epoch_loss = []
         for _ in range(self.args.local_ep):
