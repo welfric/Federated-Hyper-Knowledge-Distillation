@@ -93,6 +93,9 @@ class TempNet(nn.Module):
 
 class SimpleCNN(nn.Module):
     def __init__(self, num_classes=10):
+
+        self.num_classes = num_classes
+
         super(SimpleCNN, self).__init__()
 
         # First block
