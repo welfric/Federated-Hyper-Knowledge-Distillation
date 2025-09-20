@@ -17,7 +17,7 @@ class ServerFedAvg(Server):
     
     def Create_Clints(self):
         for idx in range(self.args.num_clients):
-            self.LocalModels.append(ClientFedAvg(self.args, copy.deepcopy(self.global_model),self.Loaders_train[idx], self.Loaders_local_test[idx], idx=idx, logger=self.logger, code_length = self.args.code_len, num_classes = self.args.num_classes, device=self.device))
+            self.LocalModels.append(ClientFedAvg(self.args, copy.deepcopy(self.global_model),self.Loaders_train[idx], self.Loaders_local_test[idx], idx=idx, code_length = self.args.code_len, num_classes = self.args.num_classes, device=self.device))
             
             
     def train(self):
