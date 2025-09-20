@@ -83,7 +83,7 @@ class ServerFedTemp(Server):
         plt.figure(figsize=(10, 6))
         for i in range(len(client_temps)):
             plt.plot(
-                self.args.num_epochs, client_temps[i], marker="s", label=f"Client {i}"
+                range(self.args.num_epochs), client_temps[i], marker="s", label=f"Client {i}"
             )
         plt.title("Client τ evolution")
         plt.legend()

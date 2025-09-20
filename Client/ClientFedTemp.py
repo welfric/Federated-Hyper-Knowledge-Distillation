@@ -15,7 +15,7 @@ class ClientFedTemp:
         self.model = copy.deepcopy(model)
         self.tempnet = TempNet(feature_dim=64).to(device)
         self.temp_optimizer = torch.optim.SGD(
-            self.tempnet.parameters(), lr=self.args.lr, momentum=0.9
+            self.tempnet.parameters(), lr=self.args.lr/10,
         )
         self.criterion = nn.CrossEntropyLoss()
         self.warmup_rounds = 25
