@@ -21,8 +21,8 @@ class ClientFedHKD(Client):
     idxs: the index for data of this local model
     logger: log the loss and the process
     """
-    def __init__(self, args, model, Loader_train,loader_test,idx, logger, code_length, num_classes, device):
-        super().__init__(args, model, Loader_train,loader_test,idx, logger, code_length, num_classes, device)
+    def __init__(self, args, model, Loader_train,loader_test,idx, code_length, num_classes, device):
+        super().__init__(args, model, Loader_train,loader_test,idx, code_length, num_classes, device)
     
     
     def update_weights(self,global_round):
@@ -52,7 +52,7 @@ class ClientFedHKD(Client):
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
-        return self.model.state_dict(),sum(epoch_loss) / len(epoch_loss)
+        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     
     def update_weights_HKD(self,global_features, global_soft_prediction, lam, gamma, temp, global_round):
