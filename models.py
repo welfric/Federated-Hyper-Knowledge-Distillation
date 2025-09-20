@@ -75,7 +75,7 @@ class ShuffLeNet(nn.Module):
 
 
 class TempNet(nn.Module):
-    def __init__(self, feature_dim=64, hidden_dim=128, tau_min=0.1, tau_max=2.0):
+    def __init__(self, feature_dim=512, hidden_dim=128, tau_min=0.1, tau_max=2.0):
         super().__init__()
         self.fc1 = nn.Linear(feature_dim, hidden_dim)
         # self.fc2 = nn.Linear(hidden_dim, hidden_dim // 2)
@@ -135,7 +135,7 @@ class SimpleCNN(nn.Module):
     def forward(self, x):
         # Full forward = feature extractor + classifier
         z = self.feature_extractor(x)
-        p = self.classifier(p)
+        p = self.classifier(z)
         return z, p
 
     def feature_extractor(self, x):
