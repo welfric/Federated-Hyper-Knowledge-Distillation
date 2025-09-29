@@ -30,7 +30,7 @@ class ClientFedTemp:
         else:
             self.tempnet.eval()
 
-        optimizer = torch.optim.SGD(self.model.parameters(), lr=self.args.lr)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
         self.temp_optimizer = torch.optim.SGD(
             self.tempnet.parameters(),
             lr=self.args.lr,
