@@ -132,8 +132,12 @@ class SimpleCNN(nn.Module):
         self.bn_fc2 = nn.BatchNorm1d(512)
         self.dropout2 = nn.Dropout(0.3)
 
+        self.fc3 = nn.Linear(512, 64)
+        self.bn_fc3 = nn.BatchNorm1d(64)
+        self.dropout3 = nn.Dropout(0.2)
+
         # Final classifier head
-        self.fc3 = nn.Linear(512, num_classes)
+        self.fc4 = nn.Linear(64, num_classes)
 
     def forward(self, x):
         # Full forward = feature extractor + classifier
@@ -164,8 +168,9 @@ class SimpleCNN(nn.Module):
         x = self.dropout1(x)
         x = F.relu(self.bn_fc2(self.fc2(x)))
         x = self.dropout2(x)
-
-        return x  # final 512-D feature vector
+        x = F.relu(self.bn_fc3(self.fc3(x)))  
+        x = self.dropout3(x)
+        return x  
 
     def classifier(self, features):
-        return self.fc3(features)
+        return self.fc4(features)
