@@ -13,7 +13,7 @@ class ClientFedTemp:
         self.idx = idx
         self.device = device
         self.model = copy.deepcopy(model)
-        self.tempnet = TempNet(feature_dim=512 if args.model == "CNN" else 64).to(
+        self.tempnet = TempNet(feature_dim=64).to(
             device
         )
 
