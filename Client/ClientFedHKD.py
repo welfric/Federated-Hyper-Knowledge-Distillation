@@ -85,7 +85,7 @@ class ClientFedHKD(Client):
                     loss2 = 0*loss1
                     loss3 = 0*loss1
                 else:
-                    loss2 = self.kld(Q_help.log(),tensor_global_soft_prediction)
+                    loss2 = self.kld(Q_help.log(),tensor_global_soft_prediction + 1e-8)
                     loss3 = self.mse(F,target_features)
                 loss = loss1 + lam*loss2 + gamma*loss3
                 loss.backward()
