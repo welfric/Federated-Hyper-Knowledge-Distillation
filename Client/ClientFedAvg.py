@@ -28,7 +28,7 @@ class ClientFedAvg(Client):
         self.model.to(self.device)
         self.model.train()
         epoch_loss = []
-        optimizer = optim.Adam(self.model.parameters(),lr=self.args.lr)
+        optimizer = optim.SGD(self.model.parameters(),lr=self.args.lr, momentum=0.9)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.args.lr_sh_rate, gamma=0.5)
         for iter in range(self.args.local_ep):
             batch_loss = []
