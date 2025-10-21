@@ -29,7 +29,7 @@ class ClientFedTemp:
             self.tempnet.eval()
 
         optimizer = torch.optim.SGD(
-            self.model.parameters(), lr=self.args.lr, momentum=0.9
+            self.model.parameters(), lr=self.args.lr,
         )
         self.temp_optimizer = torch.optim.SGD(
             self.tempnet.parameters(),
