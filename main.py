@@ -7,7 +7,7 @@ import hashlib
 import argparse
 
 from models import CNNFemnist,ResNet18,ShuffLeNet, SimpleCNN
-from sampling import LocalDataset, LocalDataloaders, partition_data
+from sampling import LocalDataset, load_and_partition_data, LocalDataloaders, partition_data
 from option import args_parser
 
 # import different schemes  
@@ -40,14 +40,18 @@ args_hash = hashlib.sha256(args_hash.encode()).hexdigest()
 
 
 # Generate data partitions in FL
-train_dataset,testset, dict_users, dict_users_test = partition_data(n_users = args.num_clients, alpha=args.beta,rand_seed = args.seed, dataset=str(args.dataset))
+# train_dataset,testset, dict_users, dict_users_test = partition_data(n_users = args.num_clients, alpha=args.beta,rand_seed = args.seed, dataset=str(args.dataset))
 
 
 
-# Load local training datasets and testsets for each client
-Loaders_train = LocalDataloaders(train_dataset,dict_users,args.batch_size,ShuffleorNot = True,frac=args.part)
-Loaders_test = LocalDataloaders(testset,dict_users_test,args.batch_size,ShuffleorNot = True,frac=2*args.part)
-global_loader_test = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,shuffle=True, num_workers=2)
+# # Load local training datasets and testsets for each client
+# Loaders_train = LocalDataloaders(train_dataset,dict_users,args.batch_size,ShuffleorNot = True,frac=args.part)
+# Loaders_test = LocalDataloaders(testset,dict_users_test,args.batch_size,ShuffleorNot = True,frac=2*args.part)
+# global_loader_test = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,shuffle=True, num_workers=2)
+
+
+Loaders_train, Loaders_test, global_loader_test, _ = load_and_partition_data(num_clients=args.num_clients, dataset=args.dataset, alpha=args.alpha, batch_size=args.batch_size, frac=args.part, seed=args.seed)
+testset = _
 
 for idx in range(args.num_clients):
     counts = [0]*args.num_classes
