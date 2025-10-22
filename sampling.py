@@ -354,7 +354,7 @@ def load_and_partition_data(num_clients, dataset, alpha, batch_size, frac, rand_
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             ]
         )
-        train_dataset = datasets.CIFAR10(
+        full_dataset = datasets.CIFAR10(
             data_dir, train=True, download=True, transform=transform
         )
         test_dataset = datasets.CIFAR10(
@@ -372,7 +372,7 @@ def load_and_partition_data(num_clients, dataset, alpha, batch_size, frac, rand_
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             ]
         )
-        train_dataset = datasets.CIFAR100(
+        full_dataset = datasets.CIFAR100(
             data_dir, train=True, download=True, transform=transform
         )
         test_dataset = datasets.CIFAR100(
@@ -382,7 +382,7 @@ def load_and_partition_data(num_clients, dataset, alpha, batch_size, frac, rand_
         y_test = np.array(test_dataset.targets)
 
 
-    N = len(train_dataset)  # Total training samples (50,000 for CIFAR-10)
+    N = len(full_dataset)  # Total training samples (50,000 for CIFAR-10)
     N_test = len(test_dataset)  # Total test samples (10,000 for CIFAR-10)
 
     # Initializing index maps for training and validation (test) sets, as in FedHKD
