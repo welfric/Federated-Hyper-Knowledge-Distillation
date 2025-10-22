@@ -360,7 +360,7 @@ def load_and_partition_data(num_clients, dataset, alpha, batch_size, frac, rand_
         test_dataset = datasets.CIFAR10(
             data_dir, train=False, download=True, transform=transform
         )
-        y_train = np.array(train_dataset.targets)
+        y_train = np.array(full_dataset.targets)
         y_test = np.array(test_dataset.targets)
 
     elif dataset.upper() == "CIFAR100":
@@ -378,7 +378,7 @@ def load_and_partition_data(num_clients, dataset, alpha, batch_size, frac, rand_
         test_dataset = datasets.CIFAR100(
             data_dir, train=False, download=True, transform=transform
         )
-        y_train = np.array(train_dataset.targets)
+        y_train = np.array(full_dataset.targets)
         y_test = np.array(test_dataset.targets)
 
 
