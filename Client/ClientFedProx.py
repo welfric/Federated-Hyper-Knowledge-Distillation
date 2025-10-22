@@ -21,8 +21,8 @@ class ClientFedProx(Client):
     idxs: the index for data of this local model
     logger: log the loss and the process
     """
-    def __init__(self, args, model, Loader_train,loader_test,idx, logger, code_length, num_classes, device):
-        super().__init__(args, model, Loader_train,loader_test,idx, logger, code_length, num_classes, device)
+    def __init__(self, args, model, Loader_train,loader_test,idx, code_length, num_classes, device):
+        super().__init__(args, model, Loader_train,loader_test,idx, code_length, num_classes, device)
     
     def update_weights_Prox(self,global_round, lam):
         self.model.cuda()
@@ -31,7 +31,7 @@ class ClientFedProx(Client):
         global_model.eval()
         global_weight_collector = list(global_model.parameters())
         epoch_loss = []
-        optimizer = optim.Adam(self.model.parameters(),lr=self.args.lr)
+        optimizer = optim.SGD(self.model.parameters(),lr=self.args.lr)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.args.lr_sh_rate, gamma=0.5)
         for iter in range(self.args.local_ep):
             batch_loss = []
@@ -55,7 +55,6 @@ class ClientFedProx(Client):
                         global_round, iter, batch_idx * len(X),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss.item(),fed_prox_reg.item()))
-                self.logger.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
