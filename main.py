@@ -50,7 +50,7 @@ args_hash = hashlib.sha256(args_hash.encode()).hexdigest()
 # global_loader_test = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,shuffle=True, num_workers=2)
 
 
-Loaders_train, Loaders_test, global_loader_test, _ = load_and_partition_data(num_clients=args.num_clients, dataset=args.dataset, alpha=args.alpha, batch_size=args.batch_size, frac=args.part, seed=args.seed)
+Loaders_train, Loaders_test, global_loader_test, _ = load_and_partition_data(num_clients=args.num_clients, dataset=args.dataset, alpha=args.beta, batch_size=args.batch_size, frac=args.part, seed=args.seed)
 testset = _
 
 for idx in range(args.num_clients):
