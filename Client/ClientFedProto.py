@@ -67,7 +67,7 @@ class ClientFedProto(Client):
                 X = X.to(self.device)
                 y = y.to(self.device)
                 optimizer.zero_grad()
-                F,Z = self.model.feature_extractor(X)
+                F,Z = self.model(X)
                 loss1 = self.ce(Z,y)
                 target_features = copy.deepcopy(F.data)
 
