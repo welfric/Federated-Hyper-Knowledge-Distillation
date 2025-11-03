@@ -18,6 +18,7 @@ from Server.ServerFedProto import ServerFedProto
 from Server.ServerFedHKD import ServerFedHKD
 from Server.ServerFedTemp import ServerFedTemp
 from Server.ServerFedProxChilled import ServerFedProxChilled
+from Server.ServerFedProtoChilled import ServerFedProtoChilled
 
 print(torch.__version__)
 torch.cuda.is_available()
@@ -111,6 +112,8 @@ if args.alg == "FedTemp":
     server = ServerFedTemp(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
 if args.alg == "FedProxChilled":
     server = ServerFedProxChilled(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
+if args.alg == "FedProtoChilled":
+    server = ServerFedProtoChilled(args,global_model,Loaders_train,Loaders_test,global_loader_test,device)
 
 server.Create_Clints()
 server.train()
