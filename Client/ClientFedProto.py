@@ -21,15 +21,15 @@ class ClientFedProto(Client):
     idxs: the index for data of this local model
     logger: log the loss and the process
     """
-    def __init__(self, args, model, Loader_train,loader_test,idx, logger, code_length, num_classes, device):
-        super().__init__(args, model, Loader_train,loader_test,idx, logger, code_length, num_classes, device)
+    def __init__(self, args, model, Loader_train,loader_test,idx,code_length, num_classes, device):
+        super().__init__(args, model, Loader_train,loader_test,idx, code_length, num_classes, device)
     
     
     def update_weights(self,global_round):
         self.model.to(self.device)
         self.model.train()
         epoch_loss = []
-        optimizer = optim.Adam(self.model.parameters(),lr=self.args.lr)
+        optimizer = optim.SGD(self.model.parameters(),lr=self.args.lr)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.args.lr_sh_rate, gamma=0.5)
         for iter in range(self.args.local_ep):
             batch_loss = []
@@ -48,7 +48,6 @@ class ClientFedProto(Client):
                         global_round, self.idx, iter, batch_idx * len(X),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss.item()))
-                self.logger.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
@@ -59,7 +58,7 @@ class ClientFedProto(Client):
         self.model.to(self.device)
         self.model.train()
         epoch_loss = []
-        optimizer = optim.Adam(self.model.parameters(),lr=self.args.lr)
+        optimizer = optim.SGD(self.model.parameters(),lr=self.args.lr)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.args.lr_sh_rate, gamma=0.5)
         tensor_global_features = self.dict_to_tensor(global_features).to(self.device)
         for iter in range(self.args.local_ep):
@@ -94,7 +93,6 @@ class ClientFedProto(Client):
                         global_round, iter, batch_idx * len(X),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss1.item(),loss2.item()))
-                self.logger.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
                         
