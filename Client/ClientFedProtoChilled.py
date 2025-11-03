@@ -74,7 +74,7 @@ class ClientFedProto(Client):
                 y = y.to(self.device)
                 optimizer.zero_grad()
                 temp_optimizer.zero_grad()
-                F,Z = self.model.feature_extractor(X)
+                F,Z = self.model(X)
 
                 tau = self.tempnet(F.detach())
                 scaled_logits = Z / tau
