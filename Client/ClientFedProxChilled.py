@@ -25,7 +25,7 @@ class ClientFedProxChilled(Client):
     def __init__(self, args, model, Loader_train,loader_test,idx, code_length, num_classes, device):
         super().__init__(args, model, Loader_train,loader_test,idx, code_length, num_classes, device)
 
-        self.tempnet = TempNet(feature_dim=64).to(device)
+        self.tempnet = TempNet(feature_dim=512).to(device)
 
     
     def update_weights_Prox(self,global_round, lam):
@@ -66,4 +66,4 @@ class ClientFedProxChilled(Client):
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
-        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss)
+        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss)  
