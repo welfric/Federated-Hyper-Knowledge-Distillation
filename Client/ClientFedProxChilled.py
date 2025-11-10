@@ -65,5 +65,12 @@ class ClientFedProxChilled(Client):
                         100. * batch_idx / len(self.trainloader), loss.item(),fed_prox_reg.item()))
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+        
+        with torch.no_grad():
 
-        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss)  
+            sample_data, _ = next(iter(self.train_loader))
+            sample_data = sample_data.to(self.device)
+            f, _ = self.model(sample_data)
+            tau_val = self.tempnet(f).item()
+
+        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss), tau_val

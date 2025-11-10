@@ -10,6 +10,7 @@ import numpy as np
 from utils import average_weights
 from mem_utils import MemReporter
 import time
+import matplotlib.pyplot as plt
 
 class ServerFedProxChilled(Server):
     def __init__(self, args, global_model,Loader_train,Loaders_local_test,Loader_global_test,device):
@@ -25,6 +26,7 @@ class ServerFedProxChilled(Server):
         start_time = time.time()
         train_loss = []
         global_weights = self.global_model.state_dict()
+        client_temps = [[] for _ in range(self.args.num_clients)]
         for epoch in tqdm(range(self.args.num_epochs)):
             test_accuracy = 0
             local_weights, local_losses = [], []
@@ -34,7 +36,8 @@ class ServerFedProxChilled(Server):
             for idx in idxs_users:
                 if self.args.upload_model == True:
                     self.LocalModels[idx].load_model(global_weights)
-                w, loss = self.LocalModels[idx].update_weights_Prox(global_round=epoch, lam=0.1)
+                w, loss, tau_val = self.LocalModels[idx].update_weights_Prox(global_round=epoch, lam=0.1)
+                client_temps[idx].append(tau_val)
                 local_losses.append(copy.deepcopy(loss))
                 local_weights.append(copy.deepcopy(w))
                 acc = self.LocalModels[idx].test_accuracy()
@@ -53,3 +56,17 @@ class ServerFedProxChilled(Server):
         print('Training is completed.')
         end_time = time.time()
         print('running time: {} s '.format(end_time - start_time))
+
+        plt.figure(figsize=(10, 6))
+        for i in range(len(client_temps)):
+            plt.plot(
+                range(self.args.num_epochs),
+                client_temps[i],
+                marker="s",
+                label=f"Client {i}",
+            )
+        plt.title("Client τ evolution")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+        plt.savefig("Client_tau_evolution.png")
