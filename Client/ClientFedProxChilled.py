@@ -68,7 +68,7 @@ class ClientFedProxChilled(Client):
         
         with torch.no_grad():
 
-            sample_data, _ = next(iter(self.train_loader))
+            sample_data, _ = next(iter(self.trainloader))
             sample_data = sample_data.to(self.device)
             f, _ = self.model(sample_data)
             tau_val = self.tempnet(f).item()
