@@ -4,7 +4,7 @@ import torch
 import copy
 from utils import Accuracy
 from Server.ServerBase import Server
-from Client.ClientFedProtoChilled import ClientFedProto
+from Client.ClientFedProtoChilled import ClientFedProtoChilled
 from tqdm import tqdm
 import numpy as np
 from utils import average_weights
@@ -12,6 +12,7 @@ from mem_utils import MemReporter
 import time
 from sampling import LocalDataset, LocalDataloaders, partition_data
 import gc
+import matplotlib.pyplot as plt
 
 class ServerFedProtoChilled(Server):
     def __init__(self, args, global_model,Loader_train,Loaders_local_test,Loader_global_test,device):
@@ -20,7 +21,7 @@ class ServerFedProtoChilled(Server):
     
     def Create_Clints(self):
         for idx in range(self.args.num_clients):
-            self.LocalModels.append(ClientFedProto(self.args, copy.deepcopy(self.global_model),self.Loaders_train[idx], self.Loaders_local_test[idx], idx=idx, code_length = self.args.code_len, num_classes = self.args.num_classes, device=self.device))
+            self.LocalModels.append(ClientFedProtoChilled(self.args, copy.deepcopy(self.global_model),self.Loaders_train[idx], self.Loaders_local_test[idx], idx=idx, code_length = self.args.code_len, num_classes = self.args.num_classes, device=self.device))
             
     def global_knowledge_aggregation(self, features):
         global_local_features = dict()
@@ -41,6 +42,7 @@ class ServerFedProtoChilled(Server):
         start_time = time.time()
         train_loss = []
         global_weights = self.global_model.state_dict()
+        client_temps = [[] for _ in range(self.args.num_clients)]
         for epoch in tqdm(range(self.args.num_epochs)):
             Knowledges = []
             test_accuracy = 0
@@ -59,7 +61,8 @@ class ServerFedProtoChilled(Server):
                     test_accuracy += acc
                     
                 else:
-                    w, loss = self.LocalModels[idx].update_weights_Proto(global_round=epoch, global_features=global_features, gamma = self.args.gamma)
+                    w, loss, tau_val = self.LocalModels[idx].update_weights_Proto(global_round=epoch, global_features=global_features, gamma = self.args.gamma)
+                    client_temps[idx].append(tau_val)
                     local_losses.append(copy.deepcopy(loss))
                     local_weights.append(copy.deepcopy(w))
                     acc = self.LocalModels[idx].test_accuracy()
@@ -83,3 +86,17 @@ class ServerFedProtoChilled(Server):
         print('Training is completed.')
         end_time = time.time()
         print('running time: {} s '.format(end_time - start_time))
+
+        plt.figure(figsize=(10, 6))
+        for i in range(len(client_temps)-1):
+            plt.plot(
+                range(self.args.num_epochs),
+                client_temps[i],
+                marker="s",
+                label=f"Client {i}",
+            )
+        plt.title("Client τ evolution")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+        plt.savefig("Client_tau_evolution.png")

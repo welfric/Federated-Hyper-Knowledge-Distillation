@@ -15,7 +15,7 @@ import gc
 
 from models import TempNet
 
-class ClientFedProto(Client):
+class ClientFedProtoChilled(Client):
     """
     This class is for train the local model with input global model(copied) and output the updated weight
     args: argument 
@@ -26,15 +26,16 @@ class ClientFedProto(Client):
     """
     def __init__(self, args, model, Loader_train,loader_test,idx,code_length, num_classes, device):
         super().__init__(args, model, Loader_train,loader_test,idx, code_length, num_classes, device)
+
+        self.tempnet = TempNet(feature_dim=512).to(device)
     
     
     def update_weights(self,global_round):
         self.model.to(self.device)
         self.model.train()
         epoch_loss = []
-        self.tempnet = TempNet(feature_dim=512).to(self.device)
         optimizer = optim.SGD(self.model.parameters(),lr=self.args.lr)
-        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.args.lr_sh_rate, gamma=0.5)
+        # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.args.lr_sh_rate, gamma=0.5)
         for iter in range(self.args.local_ep):
             batch_loss = []
             for batch_idx, (X, y) in enumerate(self.trainloader):
@@ -107,8 +108,15 @@ class ClientFedProto(Client):
                         100. * batch_idx / len(self.trainloader), loss1.item(),loss2.item()))
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
+        with torch.no_grad():
+
+            sample_data, _ = next(iter(self.trainloader))
+            sample_data = sample_data.to(self.device)
+            f, _ = self.model(sample_data)
+            tau_val = self.tempnet(f).item()
                         
-        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss)
+        return self.model.state_dict(), sum(epoch_loss) / len(epoch_loss), tau_val
     
     # generate knowledge for FedDFKD
     def generate_knowledge(self):
