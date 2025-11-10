@@ -68,7 +68,7 @@ class ClientFedProtoChilled(Client):
         temp_optimizer = optim.SGD(self.tempnet.parameters(), lr=self.args.lr)
 
         tensor_global_features = self.dict_to_tensor(global_features).to(self.device)
-        for iter in range(self.args.local_ep):
+        for iterr in range(self.args.local_ep):
             batch_loss = []
             for batch_idx, (X, y) in enumerate(self.trainloader):
                 X = X.to(self.device)
@@ -103,7 +103,7 @@ class ClientFedProtoChilled(Client):
                 temp_optimizer.step()
                 if batch_idx % 10 == 0:
                     print('| Global Round : {} | Local Epoch : {} | [{}/{} ({:.0f}%)]\tLoss1: {:.6f} Loss2: {:.6f}  '.format(
-                        global_round, iter, batch_idx * len(X),
+                        global_round, iterr, batch_idx * len(X),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss1.item(),loss2.item()))
                 batch_loss.append(loss.item())
