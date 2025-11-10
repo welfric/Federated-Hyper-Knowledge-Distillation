@@ -4,7 +4,7 @@ import torch
 import copy
 from utils import Accuracy
 from Server.ServerBase import Server
-from Client.ClientFedProx import ClientFedProx
+from Client.ClientFedProxChilled import ClientFedProxChilled
 from tqdm import tqdm
 import numpy as np
 from utils import average_weights
@@ -19,7 +19,7 @@ class ServerFedProxChilled(Server):
     
     def Create_Clints(self):
         for idx in range(self.args.num_clients):
-            self.LocalModels.append(ClientFedProx(self.args, copy.deepcopy(self.global_model),self.Loaders_train[idx], self.Loaders_local_test[idx], idx=idx, code_length = self.args.code_len, num_classes = self.args.num_classes, device=self.device))
+            self.LocalModels.append(ClientFedProxChilled(self.args, copy.deepcopy(self.global_model),self.Loaders_train[idx], self.Loaders_local_test[idx], idx=idx, code_length = self.args.code_len, num_classes = self.args.num_classes, device=self.device))
             
             
     def train(self):
